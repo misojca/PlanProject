@@ -14,28 +14,36 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.grupa3.model.PlanStatus
+import com.example.grupa3.ui.list.PlanListUiState
+import com.example.grupa3.ui.list.PlanListViewModel
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 
 @Composable
 fun PlanDetailsScreen(
     navController: NavHostController,
-    planId: String?,
-    viewModel: PlanDetailsViewModel
+    planId: String,
+    viewModel: PlanListViewModel
 ) {
+    val plan = viewModel.getPlanById(planId)
+    val currentState = viewModel.state
+    var permissionMessage by remember { mutableStateOf("") }
+
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
-        viewModel.onPermissionResult(isGranted)
+        permissionMessage = if (isGranted) "Location allowed" else "Location denied"
+        //if (currentState is PlanListUiState.Success) {
+        //    val msg = if (isGranted) "Location allowed" else "Location denied"
+        //}
     }
-
-    LaunchedEffect(planId) {
-        viewModel.initPlan(planId)
-    }
-
-    val currentState = viewModel.state
 
     Column(
         modifier = Modifier
@@ -44,27 +52,40 @@ fun PlanDetailsScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         when (currentState) {
-            is PlanDetailsUiState.Loading -> {
+            is PlanListUiState.Loading -> {
                 CircularProgressIndicator()
             }
-            is PlanDetailsUiState.Success -> {
-                val plan = currentState.plan
+            is PlanListUiState.Success -> {
+                val plan = plan ?: return@Column
 
                 Text(text = plan.title, style = MaterialTheme.typography.headlineLarge)
                 Text(text = "Status: ${plan.status}")
 
-                if (currentState.permissionMessage.isNotEmpty()) {
+                if (permissionMessage.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = currentState.permissionMessage,
+                        text = permissionMessage,
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
+                //val plan = currentState.plan
+
+                //Text(text = plan.title, style = MaterialTheme.typography.headlineLarge)
+                //Text(text = "Status: ${plan.status}")
+
+                //if (currentState.permissionMessage.isNotEmpty()) {
+                //    Spacer(modifier = Modifier.height(8.dp))
+                //    Text(
+                //        text = currentState.permissionMessage,
+                //        color = MaterialTheme.colorScheme.primary,
+                //        style = MaterialTheme.typography.bodyMedium
+                //    )
+                //}
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Button(onClick = { viewModel.activatePlan() }) {
+                Button(onClick = { viewModel.updatePlanStatus(planId, PlanStatus.ACTIVE) }) {
                     Text("Activate Plan")
                 }
 
@@ -74,11 +95,11 @@ fun PlanDetailsScreen(
                     Text("Show Location")
                 }
 
-                Button(onClick = { viewModel.completePlan() }) {
+                Button(onClick = { viewModel.updatePlanStatus(planId, PlanStatus.COMPLETED) }) {
                     Text("Complete Plan")
                 }
             }
-            is PlanDetailsUiState.Error -> {
+            is PlanListUiState.Error -> {
                 Text("Plan not found")
             }
         }

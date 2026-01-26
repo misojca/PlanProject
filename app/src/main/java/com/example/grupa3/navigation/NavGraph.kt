@@ -8,12 +8,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.grupa3.ui.details.PlanDetailsScreen
-import com.example.grupa3.ui.details.PlanDetailsViewModel
+//import com.example.grupa3.ui.details.PlanDetailsViewModel
 import com.example.grupa3.ui.list.PlanListScreen
 import com.example.grupa3.ui.list.PlanListViewModel
 
 @Composable
-fun Navigation() {
+fun Navigation(mainViewModel: PlanListViewModel) {
     val navController = rememberNavController()
 
     NavHost(
@@ -22,10 +22,10 @@ fun Navigation() {
     ) {
 
         composable(route = Screen.PlanListScreen.route) {
-            val listViewModel: PlanListViewModel = viewModel()
+            //val listViewModel: PlanListViewModel = viewModel()
             PlanListScreen(
                 navController = navController,
-                viewModel = listViewModel
+                viewModel = mainViewModel
             )
         }
 
@@ -33,14 +33,14 @@ fun Navigation() {
             route = Screen.PlanDetailsScreen.route + "/{planId}",
             arguments = listOf(navArgument("planId") { type = NavType.StringType })
         ) { backStackEntry ->
-            val id = backStackEntry.arguments?.getString("planId")
+            val id = backStackEntry.arguments?.getString("planId")!!
 
-            val detailsViewModel: PlanDetailsViewModel = viewModel()
+            //val detailsViewModel: PlanDetailsViewModel = viewModel()
 
             PlanDetailsScreen(
                 navController = navController,
                 planId = id,
-                viewModel = detailsViewModel
+                viewModel = mainViewModel
             )
         }
     }
