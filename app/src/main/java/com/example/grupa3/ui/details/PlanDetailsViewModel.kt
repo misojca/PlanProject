@@ -4,7 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.grupa3.data.mockPlans
+import com.example.grupa3.data.PlanRepository
 import com.example.grupa3.model.Plan
 import com.example.grupa3.model.PlanStatus
 
@@ -22,8 +22,13 @@ class PlanDetailsViewModel : ViewModel() {
     var state by mutableStateOf<PlanDetailsUiState>(PlanDetailsUiState.Loading)
         private set
 
+    private var currentPlanId: String? = null
+
     fun initPlan(planId: String?) {
-        val foundPlan = mockPlans.find { it.id == planId }
+        this.currentPlanId = planId
+
+        val foundPlan = PlanRepository.getPlanById(planId)
+
         state = if (foundPlan != null) {
             PlanDetailsUiState.Success(plan = foundPlan)
         } else {
@@ -32,18 +37,16 @@ class PlanDetailsViewModel : ViewModel() {
     }
 
     fun activatePlan() {
-        val currentState = state
-        if (currentState is PlanDetailsUiState.Success) {
-            val updatedPlan = currentState.plan.copy(status = PlanStatus.ACTIVE)
-            state = currentState.copy(plan = updatedPlan)
+        currentPlanId?.let { id ->
+            PlanRepository.updatePlanStatus(id, PlanStatus.ACTIVE)
+            initPlan(id)
         }
     }
 
     fun completePlan() {
-        val currentState = state
-        if (currentState is PlanDetailsUiState.Success) {
-            val updatedPlan = currentState.plan.copy(status = PlanStatus.COMPLETED)
-            state = currentState.copy(plan = updatedPlan)
+        currentPlanId?.let { id ->
+            PlanRepository.updatePlanStatus(id, PlanStatus.COMPLETED)
+            initPlan(id)
         }
     }
 
