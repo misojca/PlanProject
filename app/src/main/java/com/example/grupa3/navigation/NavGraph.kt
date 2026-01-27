@@ -1,7 +1,6 @@
 package com.example.grupa3.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,7 +12,7 @@ import com.example.grupa3.ui.list.PlanListScreen
 import com.example.grupa3.ui.list.PlanListViewModel
 
 @Composable
-fun Navigation() {
+fun Navigation(planListViewModel: PlanListViewModel, planDetailsViewModel: PlanDetailsViewModel) {
     val navController = rememberNavController()
 
     NavHost(
@@ -22,10 +21,10 @@ fun Navigation() {
     ) {
 
         composable(route = Screen.PlanListScreen.route) {
-            val listViewModel: PlanListViewModel = viewModel()
+
             PlanListScreen(
                 navController = navController,
-                viewModel = listViewModel
+                viewModel = planListViewModel
             )
         }
 
@@ -35,12 +34,10 @@ fun Navigation() {
         ) { backStackEntry ->
             val id = backStackEntry.arguments?.getString("planId")
 
-            val detailsViewModel: PlanDetailsViewModel = viewModel()
-
             PlanDetailsScreen(
                 navController = navController,
                 planId = id,
-                viewModel = detailsViewModel
+                viewModel = planDetailsViewModel
             )
         }
     }

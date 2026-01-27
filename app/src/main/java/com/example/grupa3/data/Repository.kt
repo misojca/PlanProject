@@ -12,7 +12,9 @@ object PlanRepository {
 
     fun getPlans(): List<Plan> = _plans
 
-    fun getPlanById(id: String?): Plan? = _plans.find { it.id == id }
+    fun getPlanById(id: String?): Plan? =
+        _plans.find { it.id == id }
+
 
     fun updatePlanStatus(id: String?, newStatus: PlanStatus) {
         val index = _plans.indexOfFirst { it.id == id }
