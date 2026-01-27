@@ -59,6 +59,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
     implementation("com.google.accompanist:accompanist-permissions:0.34.0")
+    implementation("com.airbnb.android:lottie-compose:6.4.0")
 
 
 }

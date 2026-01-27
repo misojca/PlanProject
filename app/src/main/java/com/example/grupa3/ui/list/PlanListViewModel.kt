@@ -9,6 +9,7 @@ import com.example.grupa3.data.PlanRepository
 
 import com.example.grupa3.model.Plan
 import com.example.grupa3.model.PlanCategory
+import kotlinx.coroutines.delay
 
 import kotlinx.coroutines.launch
 
@@ -32,7 +33,7 @@ class PlanListViewModel : ViewModel() {
 
     fun loadPlans() {
         viewModelScope.launch {
-
+            delay(4000)
             val plansFromRepo = PlanRepository.getPlans()
             state = PlanListUiState.Success(plans = plansFromRepo)
         }
