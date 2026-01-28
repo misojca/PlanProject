@@ -129,7 +129,11 @@ fun PlanDetailsScreen(
         Spacer(modifier = Modifier.weight(1f))
 
         Button(
-            onClick = { navController.popBackStack() },
+            onClick = {
+                if (navController.previousBackStackEntry != null) {
+                    navController.popBackStack()
+                    }
+                      },
             modifier = Modifier.padding(bottom = 32.dp)
         ) {
             Text("Back")

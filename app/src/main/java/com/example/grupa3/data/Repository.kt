@@ -1,5 +1,6 @@
 package com.example.grupa3.data
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import com.example.grupa3.model.Plan
 import com.example.grupa3.model.PlanStatus
@@ -20,6 +21,7 @@ object PlanRepository {
         val index = _plans.indexOfFirst { it.id == id }
         if (index != -1) {
             _plans[index] = _plans[index].copy(status = newStatus)
+            Log.i("Status", "New status is $newStatus")
         }
     }
 }

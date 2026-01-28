@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +36,10 @@ import com.airbnb.lottie.compose.*
 @Composable
 fun PlanListScreen(navController: NavHostController, viewModel: PlanListViewModel) {
     val currentState = viewModel.state
+
+    LaunchedEffect(Unit) {
+        viewModel.refreshList()
+    }
 
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading_animation))
     val progress by animateLottieCompositionAsState(
@@ -107,7 +112,9 @@ fun PlanListScreen(navController: NavHostController, viewModel: PlanListViewMode
                     items(currentState.plans) { plan ->
                         Button(
                             onClick = {
-                                navController.navigate(Screen.PlanDetailsScreen.appendId(plan.id))
+                                navController.navigate(Screen.PlanDetailsScreen.appendId(plan.id)) {
+                                launchSingleTop = true
+                            }
                             },
                             modifier = Modifier.fillMaxWidth()
                         ) {

@@ -27,28 +27,32 @@ class PlanListViewModel : ViewModel() {
     var state by mutableStateOf<PlanListUiState>(PlanListUiState.Loading)
         private set
 
+    private var currentCategory: PlanCategory? = null
+
     init {
         loadPlans()
     }
 
     fun loadPlans() {
         viewModelScope.launch {
-            delay(4000)
+            delay(3000)
             val plansFromRepo = PlanRepository.getPlans()
             state = PlanListUiState.Success(plans = plansFromRepo)
         }
     }
 
     fun filterByCategory(category: PlanCategory?) {
-
+        currentCategory = category
         val allPlans = PlanRepository.getPlans()
-
-        val filteredList = if (category == null) {
-            allPlans
-        } else {
-            allPlans.filter { it.category == category }
+        val filtered = if (category == null) allPlans else allPlans.filter { it.category == category }
+        viewModelScope.launch {
+            state = PlanListUiState.Loading
+            delay(1500)
+            state = PlanListUiState.Success(filtered)
         }
+    }
 
-        state = PlanListUiState.Success(filteredList, category)
+    fun refreshList() {
+        filterByCategory(currentCategory)
     }
 }
