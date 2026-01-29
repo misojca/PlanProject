@@ -1,5 +1,6 @@
 package com.example.grupa3.ui.list
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -29,15 +30,20 @@ class PlanListViewModel : ViewModel() {
 
     private var currentCategory: PlanCategory? = null
 
+    private var canRefresh = false
+
     init {
         loadPlans()
     }
 
     fun loadPlans() {
         viewModelScope.launch {
-            delay(3000)
-            val plansFromRepo = PlanRepository.getPlans()
-            state = PlanListUiState.Success(plans = plansFromRepo)
+            state = PlanListUiState.Loading
+            delay(5000)
+            canRefresh = true
+            val allPlans = PlanRepository.getPlans()
+            val filtered = if (currentCategory == null) allPlans else allPlans.filter { it.category == currentCategory }
+            state = PlanListUiState.Success(filtered)
         }
     }
 
@@ -45,14 +51,12 @@ class PlanListViewModel : ViewModel() {
         currentCategory = category
         val allPlans = PlanRepository.getPlans()
         val filtered = if (category == null) allPlans else allPlans.filter { it.category == category }
-        viewModelScope.launch {
-            state = PlanListUiState.Loading
-            delay(1500)
             state = PlanListUiState.Success(filtered)
-        }
     }
 
     fun refreshList() {
-        filterByCategory(currentCategory)
+        if (canRefresh) {
+            filterByCategory(currentCategory)
+        }
     }
 }
